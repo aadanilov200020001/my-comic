@@ -138,7 +138,7 @@
 
 <div id="container">
   <img id="page" alt="Страница комикса">
-  <div id="info">Страница <span id="current">0</span> из <span id="total">208</span></div>
+  <div id="info">Страница <span id="current">0</span> из <span id="total">209</span></div>
 </div>
 <div id="loader">Загрузка...</div>
 
@@ -150,12 +150,12 @@
 
 <script>
 // === НАСТРОЙКИ ===
-const TOTAL_PAGES = 208;
+const TOTAL_PAGES = 209;    // ← Изменили: теперь 209 страниц (0-208)
 const FOLDER = "pages/";
 const EXT = ".jpg";
 // =================
 
-let currentPage = 0;
+let currentPage = 0;        // ← Изменили: стартуем с 0
 let isFullscreen = false;
 const img = document.getElementById("page");
 const currentSpan = document.getElementById("current");
@@ -177,14 +177,14 @@ function showPage() {
   loader.style.display = "block";
   img.style.opacity = "0.5";
   img.src = FOLDER + pageName(currentPage) + EXT;
-  currentSpan.textContent = currentPage;
+  currentSpan.textContent = currentPage;  // Показываем реальный номер (0, 1, 2...)
   
   prevBtn.disabled = (currentPage === 0);
-  nextBtn.disabled = (currentPage === TOTAL_PAGES);
+  nextBtn.disabled = (currentPage === TOTAL_PAGES - 1);
 }
 
 function nextPage() {
-  if (currentPage < TOTAL_PAGES) {
+  if (currentPage < TOTAL_PAGES - 1) {
     currentPage++;
     showPage();
   }
@@ -203,12 +203,10 @@ function enterFullscreen() {
     isFullscreen = true;
     document.body.classList.add("fullscreen-mode");
     
-    // Показываем подсказку
     fullscreenHint.classList.remove("show");
-    void fullscreenHint.offsetWidth; // Триггер для перезапуска анимации
+    void fullscreenHint.offsetWidth;
     fullscreenHint.classList.add("show");
     
-    // Пробуем настоящий fullscreen API
     if (document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen().catch(() => {});
     } else if (document.documentElement.webkitRequestFullscreen) {
@@ -223,7 +221,6 @@ function exitFullscreen() {
     isFullscreen = false;
     document.body.classList.remove("fullscreen-mode");
     
-    // Выход из настоящего fullscreen
     if (document.exitFullscreen) {
       document.exitFullscreen().catch(() => {});
     } else if (document.webkitExitFullscreen) {
@@ -245,7 +242,7 @@ img.addEventListener("load", () => {
   loader.style.display = "none";
   img.style.opacity = "1";
   
-  if (currentPage < TOTAL_PAGES) {
+  if (currentPage < TOTAL_PAGES - 1) {
     const preload = new Image();
     preload.src = FOLDER + pageName(currentPage + 1) + EXT;
   }
@@ -255,7 +252,6 @@ img.addEventListener("load", () => {
 document.body.addEventListener("click", (e) => {
   if (e.target.classList.contains("nav-btn") || e.target.id === "fullscreenBtn") return;
   
-  // В полноэкранном режиме клик ничего не делает
   if (isFullscreen) return;
   
   if (e.clientX > window.innerWidth / 2) {
@@ -299,14 +295,11 @@ document.addEventListener("touchend", (e) => {
   const diffX = touchStartX - touchEndX;
   const diffY = touchStartY - touchEndY;
   
-  // В полноэкранном режиме проверяем свайп вверх для выхода
   if (isFullscreen) {
-    // Если свайп вверх больше 100px и он сильнее горизонтального
     if (diffY > 100 && Math.abs(diffY) > Math.abs(diffX)) {
       exitFullscreen();
       return;
     }
-    // В полноэкранном режиме горизонтальные свайпы всё равно листают страницы
     if (diffX > 50 && Math.abs(diffX) > Math.abs(diffY)) {
       nextPage();
       return;
@@ -316,7 +309,6 @@ document.addEventListener("touchend", (e) => {
       return;
     }
   } else {
-    // Обычный режим — только горизонтальные свайпы
     if (diffX > 50) {
       nextPage();
     } else if (diffX < -50) {
@@ -325,7 +317,7 @@ document.addEventListener("touchend", (e) => {
   }
 }, {passive: true});
 
-// Отслеживание выхода из fullscreen (если пользователь нажал Escape)
+// Отслеживание выхода из fullscreen
 document.addEventListener("fullscreenchange", () => {
   if (!document.fullscreenElement && isFullscreen) {
     exitFullscreen();
