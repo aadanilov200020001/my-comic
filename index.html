@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111111">
+  <meta name="color-scheme" content="dark">
   <title>Мой комикс</title>
   <style>
     * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -63,6 +65,13 @@
       font-size: 14px;
       bottom: 50px;
     }
+    
+    /* Скрываем кнопки на мобильных устройствах */
+    @media (max-width: 768px) {
+      .nav-btn {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -78,9 +87,9 @@
 
 <script>
 // === НАСТРОЙКИ ===
-const TOTAL_PAGES = 208;        // количество страниц
-const FOLDER = "pages/";        // папка с картинками
-const EXT = ".jpg";             // расширение файлов
+const TOTAL_PAGES = 208;
+const FOLDER = "pages/";
+const EXT = ".jpg";
 // =================
 
 let currentPage = 1;
@@ -93,7 +102,6 @@ const loader = document.getElementById("loader");
 
 totalSpan.textContent = TOTAL_PAGES;
 
-// Теперь просто возвращаем число без нулей: 1, 2, 3...
 function pageName(num) {
   return String(num);
 }
@@ -132,6 +140,7 @@ img.addEventListener("load", () => {
   }
 });
 
+// Клик по экрану (работает и на ПК, и на телефоне)
 document.body.addEventListener("click", (e) => {
   if (e.target.classList.contains("nav-btn")) return;
   
@@ -142,14 +151,17 @@ document.body.addEventListener("click", (e) => {
   }
 });
 
+// Кнопки (видны только на ПК)
 prevBtn.addEventListener("click", prevPage);
 nextBtn.addEventListener("click", nextPage);
 
+// Клавиатура (для ПК)
 document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") nextPage();
   if (e.key === "ArrowLeft") prevPage();
 });
 
+// Свайпы для телефона
 let touchStartX = 0;
 document.addEventListener("touchstart", (e) => {
   touchStartX = e.changedTouches[0].screenX;
@@ -159,8 +171,8 @@ document.addEventListener("touchend", (e) => {
   const touchEndX = e.changedTouches[0].screenX;
   const diff = touchStartX - touchEndX;
   
-  if (diff > 50) nextPage();
-  if (diff < -50) prevPage();
+  if (diff > 50) nextPage();      // Свайп влево → следующая
+  if (diff < -50) prevPage();     // Свайп вправо → предыдущая
 }, {passive: true});
 
 showPage();
