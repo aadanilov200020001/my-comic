@@ -255,6 +255,9 @@ img.addEventListener("load", () => {
 document.body.addEventListener("click", (e) => {
   if (e.target.classList.contains("nav-btn") || e.target.id === "fullscreenBtn") return;
   
+  // В полноэкранном режиме клик ничего не делает
+  if (isFullscreen) return;
+  
   if (e.clientX > window.innerWidth / 2) {
     nextPage();
   } else {
