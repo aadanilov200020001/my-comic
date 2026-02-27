@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мой комикс</title>
+  <style>
+    * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: center;
+      width: 100%;
+    }
+    img {
+      max-width: 95vw;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 4px;
+      transition: opacity 0.15s;
+    }
+    #info {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #aaa;
+      text-align: center;
+    }
+    .nav-btn {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(74, 144, 226, 0.8);
+      color: white;
+      border: none;
+      padding: 15px 20px;
+      font-size: 24px;
+      cursor: pointer;
+      border-radius: 8px;
+      z-index: 10;
+      transition: background 0.2s;
+    }
+    .nav-btn:hover { background: rgba(74, 144, 226, 1); }
+    .nav-btn:disabled { background: rgba(100, 100, 100, 0.5); cursor: not-allowed; }
+    #prevBtn { left: 10px; }
+    #nextBtn { right: 10px; }
+    #loader {
+      position: fixed;
+      color: #888;
+      font-size: 14px;
+      bottom: 50px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="container">
+  <img id="page" alt="Страница комикса">
+  <div id="info">Страница <span id="current">1</span> из <span id="total">208</span></div>
+</div>
+<div id="loader">Загрузка...</div>
+
+<button id="prevBtn" class="nav-btn">←</button>
+<button id="nextBtn" class="nav-btn">→</button>
+
+<script>
+// === НАСТРОЙКИ ===
+const TOTAL_PAGES = 208;        // количество страниц
+const FOLDER = "pages/";        // папка с картинками
+const EXT = ".jpg";             // расширение файлов
+// =================
+
+let currentPage = 1;
+const img = document.getElementById("page");
+const currentSpan = document.getElementById("current");
+const totalSpan = document.getElementById("total");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const loader = document.getElementById("loader");
+
+totalSpan.textContent = TOTAL_PAGES;
+
+// Теперь просто возвращаем число без нулей: 1, 2, 3...
+function pageName(num) {
+  return String(num);
+}
+
+function showPage() {
+  loader.style.display = "block";
+  img.style.opacity = "0.5";
+  img.src = FOLDER + pageName(currentPage) + EXT;
+  currentSpan.textContent = currentPage;
+  
+  prevBtn.disabled = (currentPage === 1);
+  nextBtn.disabled = (currentPage === TOTAL_PAGES);
+}
+
+function nextPage() {
+  if (currentPage < TOTAL_PAGES) {
+    currentPage++;
+    showPage();
+  }
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    showPage();
+  }
+}
+
+img.addEventListener("load", () => {
+  loader.style.display = "none";
+  img.style.opacity = "1";
+  
+  if (currentPage < TOTAL_PAGES) {
+    const preload = new Image();
+    preload.src = FOLDER + pageName(currentPage + 1) + EXT;
+  }
+});
+
+document.body.addEventListener("click", (e) => {
+  if (e.target.classList.contains("nav-btn")) return;
+  
+  if (e.clientX > window.innerWidth / 2) {
+    nextPage();
+  } else {
+    prevPage();
+  }
+});
+
+prevBtn.addEventListener("click", prevPage);
+nextBtn.addEventListener("click", nextPage);
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") nextPage();
+  if (e.key === "ArrowLeft") prevPage();
+});
+
+let touchStartX = 0;
+document.addEventListener("touchstart", (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+}, {passive: true});
+
+document.addEventListener("touchend", (e) => {
+  const touchEndX = e.changedTouches[0].screenX;
+  const diff = touchStartX - touchEndX;
+  
+  if (diff > 50) nextPage();
+  if (diff < -50) prevPage();
+}, {passive: true});
+
+showPage();
+</script>
+
+</body>
+</html>
