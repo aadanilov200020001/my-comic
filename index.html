@@ -138,7 +138,7 @@
 
 <div id="container">
   <img id="page" alt="Страница комикса">
-  <div id="info">Страница <span id="current">1</span> из <span id="total">208</span></div>
+  <div id="info">Страница <span id="current">0</span> из <span id="total">208</span></div>
 </div>
 <div id="loader">Загрузка...</div>
 
@@ -155,7 +155,7 @@ const FOLDER = "pages/";
 const EXT = ".jpg";
 // =================
 
-let currentPage = 1;
+let currentPage = 0;
 let isFullscreen = false;
 const img = document.getElementById("page");
 const currentSpan = document.getElementById("current");
@@ -179,7 +179,7 @@ function showPage() {
   img.src = FOLDER + pageName(currentPage) + EXT;
   currentSpan.textContent = currentPage;
   
-  prevBtn.disabled = (currentPage === 1);
+  prevBtn.disabled = (currentPage === 0);
   nextBtn.disabled = (currentPage === TOTAL_PAGES);
 }
 
@@ -191,7 +191,7 @@ function nextPage() {
 }
 
 function prevPage() {
-  if (currentPage > 1) {
+  if (currentPage > 0) {
     currentPage--;
     showPage();
   }
