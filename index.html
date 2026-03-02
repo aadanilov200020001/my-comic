@@ -150,12 +150,12 @@
 
 <script>
 // === НАСТРОЙКИ ===
-const TOTAL_PAGES = 209;    // ← Изменили: теперь 209 страниц (0-208)
+const TOTAL_PAGES = 209;
 const FOLDER = "pages/";
-const EXT = ".jpg";
+const EXT = ".webp";  // ← ИЗМЕНЕНО: .jpg → .webp
 // =================
 
-let currentPage = 0;        // ← Изменили: стартуем с 0
+let currentPage = 0;
 let isFullscreen = false;
 const img = document.getElementById("page");
 const currentSpan = document.getElementById("current");
@@ -177,7 +177,7 @@ function showPage() {
   loader.style.display = "block";
   img.style.opacity = "0.5";
   img.src = FOLDER + pageName(currentPage) + EXT;
-  currentSpan.textContent = currentPage;  // Показываем реальный номер (0, 1, 2...)
+  currentSpan.textContent = currentPage;
   
   prevBtn.disabled = (currentPage === 0);
   nextBtn.disabled = (currentPage === TOTAL_PAGES - 1);
